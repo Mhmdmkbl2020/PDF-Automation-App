@@ -1,0 +1,38 @@
+name: Build and Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Build Android Project
+      run: |
+        cd android
+        ./gradlew build
+
+    - name: Compile Windows Project
+      run: |
+        mkdir -p windows/out
+        javac -d windows/out windows/*.java shared/*.java
+
+    - name: Run Tests
+      run: |
+        cd android
+        ./gradlew test
